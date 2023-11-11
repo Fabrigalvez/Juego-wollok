@@ -1,0 +1,11 @@
+import wollok.game.*
+import Scenes.*
+
+
+program cocina {
+	game.cellSize(80)
+	cocina.iniciar()
+	game.start()
+
+}
+ 
