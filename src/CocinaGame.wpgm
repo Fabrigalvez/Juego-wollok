@@ -4,8 +4,9 @@ import Scenes.*
 
 program cocina {
 	game.cellSize(80)
-	cocina.iniciar()
+	mostrador.iniciar()
 	game.start()
-
 }
+ 
+
  

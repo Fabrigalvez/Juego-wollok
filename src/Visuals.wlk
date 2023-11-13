@@ -1,56 +1,125 @@
 import wollok.game.*
 import objetos.*
 import selector.*
+import Scenes.*
 
 
 class Cliente {
-	var property image = null
-	var property position = game.origin()
-	var property numCliente = 0.randomUpTo(1000).truncsate(0)
+	var property image = './assets/juanCliente.jpg'
+	var property nombre = 'cliente'
+	var property position = game.at(2,3)
+	var property numCliente = 0.randomUpTo(1000).truncate(0)
 	var property pedido = new Pedido(numeroPedido = numCliente)
 
 	
-	
+	method mostrarCliente(num){
+		position = game.at(position.x() + num,position.y()) 
+		game.addVisual(self)
+	}
 	method ordenarPedido (){
 		// creo que la voy a eliminar o hacer un game.say para que se muestre el pedido por pantalla
 	}
 	
 	method recibirPedidoTerminado(){
-		//recibe el pedido terminado, cambia el estado del pedido	
+		//recibe el pedido terminado, cambia el estado del pedido
+		pedido.entregado()
 	}
 }
 
 class Cocinero {
 	
-	var property image = null
-	var property position = null
+	var property image = "./assets/cocinero.jpg"
+	var property position = game.at(3,5)
+	var property nombre = 'cocinero'
 	var property pedidos = []
 	var property pedidoProceso = []
+	var property pedidosTerminados = []
 	var property siguientePedido = true
+	var property indicePedido = 0
 	
-	method recibirPedidos(pedido){
+	method recibirPedido(pedido){
 		pedidos.add(pedido)
 	}
 	
 	// cocinero tiene la mecanica principal del juego
-	method hacerPedido(){
+	method agregarComida(comida){
 		//Generar una comunicacion entre el selector y el cocinero. El cocinero tiene que poder seleccionar las comidas necesarias para completar con un pedido
+		pedidoProceso.add(comida)
+		selector.seleccionado().clear()
 	}
 	
-	method hacerPedidos(){
-		//tendria que evaluar la posibilidad de usar un tick de 5 minutos aprox para que en ese tiempo el cocinero pueda hacer un pedido y pase con el siguiente. Cuando termine un pedido hay que mostrar un msj por pnatalla
+	method hacerPedido(){
+		siguientePedido = false
+		game.addVisual(selector)
+		if(indicePedido == 0)selector.configs()
+		//pedidoProceso.add(pedidos.get(indicePedido))
 	}
 	
-	method entregarPedidosJuego(){
+	
+	method reiniciar(){
+		pedidos.clear()
+		pedidoProceso.clear()
+		pedidosTerminados.clear()
+		siguientePedido = true
+		indicePedido = 0
+	}
+	
+	
+	method configs(){
+		//Cuando termine un pedido hay que mostrar un msj por pnatalla
+		keyboard.e().onPressDo{
+			self.hacerPedido()
+		}
+		keyboard.t().onPressDo{
+			self.pedidoTerminado()
+		}
+		keyboard.p().onPressDo{game.say(self, pedidoProceso.toString())}
+	}
+	
+	method pedidoTerminado(){
+		
+		if (not(siguientePedido)){
+			pedidosTerminados.add(pedidoProceso)
+			pedidoProceso.clear()
+			indicePedido+=1
+			siguientePedido = true
+			game.removeVisual(selector)
+			self.entregarPedidosClientes()
+			// aca usar entregarPedidosClientes
+		}
+	}
+	
+	method entregarPedidosClientes(){
 		//generar una comunicacion entre cocinero y el juego para que mande todos los pedidos cuando esten terminados
+		//aca usar pedidosTerminados
+		//cuando los pedidos esten terminados qeu se entreguen y pasar al siguiente nivel
+		if (cocina.pedidosTerminados()){
+			mostrador.clientes().forEach{cliente =>
+				//creo que aca tengo que poner lo de validar para los puntos
+				game.schedule(3000,{=>cliente.recibirPedidoTerminado()})
+		
+			}
+			game.say(self, 'PEDIDOS ENTREGADOS, VOLVE AL MOSTRADOR')
+		}
 	}
+	
+}
+
+//creo que lo voy a sacar y pongo una bind y listo
+class Boton {
+	var property activo = false
+	const property image = null
+	var property position = null
+	
+	
+	
 }
 
 class Juego {
 	
-	const cocinero = new Cocinero ()
-	var property clientes = []
-	var property dificultad = 1
+	//const cocinero = new Cocinero ()
+	//var property clientes = []
+	//var property dificultad = 1
 	var property estado = 0
 	var property pedidosTerminados = []
 	var property puntuacion = 0
@@ -69,16 +138,17 @@ class Juego {
 		self.generarClientes()
 		self.clientesPiden()
 		//cambioEscena
-		selector.configs()
+		cocina.iniciar()
 		cocinero.hacerPedidos()
 		//vuelvo a la escena principal
 		// en duda de que cocinero.entregarPedidos() se llame aca o en la clase cocinero directamente
 		cocinero.entregarPedidosJuego()
 		self.validarPedidos()
 		self.entregarPedidosTerminados()
-		self.subirDificultad()
+		//self.subirDificultad()
 		
 	}
+	
 	
 
 	method clientesPiden(){
@@ -93,7 +163,7 @@ class Juego {
 	}
 	
 	method validarPedidos(){
-		//aca validaria que onda los pedidos que hizo el cocinero y les daria una puntuacion para cuando termine el juego ver si gana o pierde basandome en esa puntuacion, o algo del estilo
+		//aca validaria que onda los pedidos que hizo el cocinero  y les daria una puntuacion para cuando termine el juego ver si gana o pierde basandome en esa puntuacion, o algo del estilo
 	}
 	
 	method entregarPedidosTerminados(){
@@ -131,7 +201,7 @@ class Pedido {
 	//estado = 0 = en proceso            1 = entregado
 	var property estado = 0
 	
-	
+	//puede que lo borre
 	method generarComida(cantidades , comidas){
 		
 		cantidades.forEach{cantidad =>
@@ -149,7 +219,10 @@ class Pedido {
 				
 		}
 	}
+	method entregado() {
+		estado = 1
 	}
+}
 
 
 object movimiento {
