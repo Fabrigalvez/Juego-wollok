@@ -3,10 +3,9 @@ import Scenes.*
 
 
 program cocina {
-	game.cellSize(80)
+
 	mostrador.iniciar()
 	game.start()
 }
- 
 
  

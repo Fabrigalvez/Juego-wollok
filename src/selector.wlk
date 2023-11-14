@@ -15,6 +15,7 @@ object selector {
 		keyboard.enter().onPressDo{self.seleccionar()}
 		keyboard.d().onPressDo{game.say(self,seleccionado.get(0).toString())}
 	}
+	
 	method seleccionar (){
 		game.onCollideDo(self,{ visual =>
 			if(seleccionado.size() == 0 and cocina.esComida(visual)){

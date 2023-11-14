@@ -9,19 +9,22 @@ class Electrodomestico {
 object cafetera inherits Electrodomestico(image = "./assets/cafetera.png", position = game.at(6,4)) {
 	var property nombre = 'cafetera'
 	method hacerCafe(taza){
+		
 		if (not estaPrendido or not taza.tieneCafe()){
 		estaPrendido = true
 		game.schedule(5000, taza.cafe())
 		estaPrendido = false
+		
 		}
 	}		
 		
 	method hacerCafeConLeche(taza){
+		
 		if (not estaPrendido or not taza.tieneCafe()){
 		estaPrendido = true
 		game.schedule(5000, taza.cafeConLeche())
 		estaPrendido = false
-		}		
+	   }		
 	}
 }
 
@@ -32,14 +35,19 @@ class Comida{
 	var property image
 	var property position
 	var tieneChispas = false
+	var property cantidad = 1
 	
 	method agregarChispas (){
 		tieneChispas = true
+	}
+	method sumarCantidad () {
+		cantidad+=1	
 	}
 }
 
 class Galletita inherits Comida(image = "./assets/galletita.png", position = game.at(5,5)){//falta la posicion
 	var property nombre = 'galletita'
+
 	override method agregarChispas(){
 		tieneChispas = true
 		image = "./assets/galletitaChispas.png"
@@ -55,7 +63,7 @@ class Torta inherits Comida(image= "./assets/torta.png", position = game.at(4,4)
 }
 
 class Muffin inherits Comida(image= "./assets/muffin.jpg", position = game.at(3,3)){//falta la posicion y la imagen
-	var property nombre = 'muffin' 	
+	var property nombre = 'muffin'	
 }
 
 

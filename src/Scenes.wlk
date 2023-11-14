@@ -14,7 +14,6 @@ class Scene {
 
 object inicio inherits Scene(width = 20, height = 20, ground ="" ){
 	
-	//Pantalla de inicio con comando de tecla para empezar a jugar
 	method iniciar(){
 		
 		game.clear()
@@ -29,21 +28,23 @@ object inicio inherits Scene(width = 20, height = 20, ground ="" ){
 }
 
 //sacar
-object mostrador inherits Scene(width = 15, height = 10, ground = "./assets/cafeteria.gif"){
+object mostrador inherits Scene(width = 1200, height = 800, ground = "./assets/fondo10.jpg"){
 	
 	var property cocinero = new Cocinero()
 	var property clientes = []
 	var property dificultad = 0
+	var property puntuacion = 0
 	
 	method iniciar(){
+		
 		game.clear()
+		game.cellSize(1)
 		game.width(self.width())
 		game.height(self.height())
 		game.boardGround(self.ground())
 		self.generarClientes()
-		game.schedule(5000, {=>game.say(clientes.get(0), 'PEDIDOS REALIZADOS, PRESIONE C PARA COCINAR')})
-		
-		
+		//hacer que cada cliente diga su pedido
+		//game.schedule(5000, {=>game.say(clientes.get(0), clientes.get(0).pedido().comida().toString())})
 		
 		keyboard.c().onPressDo{cocina.iniciar()}
 	}
@@ -51,16 +52,15 @@ object mostrador inherits Scene(width = 15, height = 10, ground = "./assets/cafe
 		if(self.pedidosEntregados()){
 			new Range (start = 1, end = dificultad).forEach{a =>
 				clientes.add(new Cliente ())
-				clientes.get(a-1).mostrarCliente(a*2)
-								
+				clientes.get(a-1).mostrarCliente(a*100)					
 			}
 			self.clientesPiden()
 		}
 	}
 	
 	method clientesPiden(){
-		
-		clientes.forEach{cliente => 
+		clientes.forEach{cliente =>
+			game.schedule(2000,{=>cliente.ordenarPedido()})
 			cocinero.recibirPedido(cliente.pedido())
 		}
 	}
@@ -77,6 +77,10 @@ object mostrador inherits Scene(width = 15, height = 10, ground = "./assets/cafe
 		 cocinero.reiniciar()	
 		return true 
 	}
+	
+	method subirPuntaje (){
+		puntuacion+=1
+	}
 }
 
 object cocina inherits Scene(width = 15, height = 10, ground=""){
@@ -88,18 +92,19 @@ object cocina inherits Scene(width = 15, height = 10, ground=""){
 	
 	//falta :
 		//selector :
-		//cocina : mirar el flujo del programa que funque bien
-		//cliente :
-		//
+
+
 		//sistema de puntuacion, victoria/derrota
 		//vista del juego
 		//funciones simples de cocina
 		//probarlo y rezar
+		
 		const cosas = [cafetera, juguera, heladera]
 		const comidas = ['muffin', 'torta', 'galletita']
 	method iniciar(){
 
 		game.clear()
+		game.cellSize(80)
 		game.width(self.width())
 		game.height(self.height())
 		game.addVisual(fondoCocina)
@@ -138,8 +143,23 @@ object cocina inherits Scene(width = 15, height = 10, ground=""){
 		return mostrador.cocinero().pedidos().size() == mostrador.cocinero().pedidosTerminados().size()
 	}
 	
+	method validarContenido (pedido1,pedido2){
+		var control = 0
+		
+		pedido1.forEach{comida1 =>
+			pedido2.forEach{comida2 =>
+				if(comida1.nombre() != comida2.nombre()){
+					control += 1
+				} 
+			}
+			
+		}
+		return control > 0
+	}
+	
 }
 
+//flatMap, any, contains
 object fondoCocina{
 	const property image = './assets/cocina4.jpg'
 	const property position = game.at(0,0)

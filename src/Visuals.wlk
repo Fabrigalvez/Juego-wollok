@@ -5,19 +5,24 @@ import Scenes.*
 
 
 class Cliente {
-	var property image = './assets/juanCliente.jpg'
+	var property image = './assets/ash_2.png'
 	var property nombre = 'cliente'
-	var property position = game.at(2,3)
+	var property position = game.at(2,54)
 	var property numCliente = 0.randomUpTo(1000).truncate(0)
 	var property pedido = new Pedido(numeroPedido = numCliente)
-
 	
 	method mostrarCliente(num){
+		
 		position = game.at(position.x() + num,position.y()) 
 		game.addVisual(self)
+		
 	}
 	method ordenarPedido (){
-		// creo que la voy a eliminar o hacer un game.say para que se muestre el pedido por pantalla
+		//hacer esto
+		//hacer un game.say para que se muestre el pedido por pantalla
+		pedido.generarComidaRandom(0.randomUpTo(10).truncate(0))
+		pedido.generarText()
+		game.say(self, pedido.text())
 	}
 	
 	method recibirPedidoTerminado(){
@@ -44,10 +49,38 @@ class Cocinero {
 	// cocinero tiene la mecanica principal del juego
 	method agregarComida(comida){
 		//Generar una comunicacion entre el selector y el cocinero. El cocinero tiene que poder seleccionar las comidas necesarias para completar con un pedido
-		pedidoProceso.add(comida)
+		
+		if (self.existe(comida)){
+			pedidoProceso.get(self.indiceComida(comida)).sumarCantidad()
+		}else{
+			pedidoProceso.add(comida)
+		}
+		
+		
 		selector.seleccionado().clear()
 	}
 	
+	method existe(comida){
+		var control = false
+		pedidoProceso.forEach{comida1 =>
+			if (comida.nombre() == comida1.nombre()){
+				var control = true
+			}
+		}
+		return control
+	}
+	
+	method indiceComida(comida){
+		
+		var index = 0
+		
+		new Range (start = 0, end = pedidoProceso.size()-1).forEach{num =>
+			if (comida.nombre() == pedidoProceso.get(num).nombre()){
+						index = num
+			}
+		}
+		return index
+	}
 	method hacerPedido(){
 		siguientePedido = false
 		game.addVisual(selector)
@@ -76,6 +109,7 @@ class Cocinero {
 		keyboard.p().onPressDo{game.say(self, pedidoProceso.toString())}
 	}
 	
+	
 	method pedidoTerminado(){
 		
 		if (not(siguientePedido)){
@@ -94,15 +128,54 @@ class Cocinero {
 		//aca usar pedidosTerminados
 		//cuando los pedidos esten terminados qeu se entreguen y pasar al siguiente nivel
 		if (cocina.pedidosTerminados()){
+			
+			self.sistemaPuntaje()
 			mostrador.clientes().forEach{cliente =>
 				//creo que aca tengo que poner lo de validar para los puntos
 				game.schedule(3000,{=>cliente.recibirPedidoTerminado()})
-		
+				
 			}
 			game.say(self, 'PEDIDOS ENTREGADOS, VOLVE AL MOSTRADOR')
 		}
 	}
 	
+	method validarPedidos(){
+		
+		var control = true
+		pedidos.forEach{pedido =>
+			pedidosTerminados.forEach{pedidoTerminado =>
+				if (not self.validarContenido(pedido,pedidoTerminado)){
+					control = false
+				}
+			}
+		}
+		return control
+	}
+	
+	method sistemaPuntaje(){
+		if (self.validarPedidos()){
+			mostrador.subirPuntaje()
+			console.println(mostrador.puntuacion())
+		}else{
+			console.println('false')
+			game.stop()
+		}
+	}
+	
+	
+	method validarContenido (pedido1,pedido2){
+		var control = true
+		
+		pedido1.comida().forEach{comida1 =>
+			pedido2.forEach{comida2 =>
+				if(comida1.nombre() != comida2.nombre() or comida1.cantidad() != comida2.cantidad()){
+					control = false
+				} 
+			}
+			
+		}
+		return control
+	}
 }
 
 //creo que lo voy a sacar y pongo una bind y listo
@@ -198,27 +271,71 @@ class Pedido {
 	
 	var property numeroPedido = 0 //random
 	var property comida = []
+	var property comidaDisponible = ['muffin','torta','galletita']
 	//estado = 0 = en proceso            1 = entregado
 	var property estado = 0
+	var property text = ""
 	
-	//puede que lo borre
-	method generarComida(cantidades , comidas){
-		
-		cantidades.forEach{cantidad =>
-			if (comidas.get(cantidad) == 'muffin'){
-				comida.push(new Muffin())
-			} 
-			
-			if (comidas.get(cantidad) == 'torta'){
-				comida.push(new Torta())
-			}
-			
-			if (comidas.get(cantidad) == 'galletita'){
-				comida.push(new Galletita())
-			}
-				
+	method generarText(){
+		comida.forEach{c =>
+			text = text + c.nombre() + " " + c.cantidad().toString() + ", "  
 		}
 	}
+		
+	method generarComidaRandom(cantidad){
+		
+		new Range (start = 0, end = cantidad-1).forEach{i=>
+			
+			if (comidaDisponible.get(0.randomUpTo(comidaDisponible.size()-1).truncate(0)) == 'muffin'){
+				
+				if (self.verificarComida('muffin')){
+					comida.get(self.indexComida('muffin')).sumarCantidad()
+				}else{
+					comida.add(new Muffin())	
+				}
+				
+			} 
+			
+			if (comidaDisponible.get(0.randomUpTo(comidaDisponible.size()-1).truncate(0)) == 'torta'){
+				if (self.verificarComida('torta')){
+					comida.get(self.indexComida('torta')).sumarCantidad()
+				}else{	
+				comida.add(new Torta())
+				}
+			}
+			
+			if (comidaDisponible.get(0.randomUpTo(comidaDisponible.size()-1).truncate(0)) == 'galletita'){
+				if (self.verificarComida('galletita')){
+					comida.get(self.indexComida('galletita')).sumarCantidad()
+				}else{
+				comida.add(new Galletita())
+				}
+			}
+		}
+	}
+	method verificarComida(comidaNombre) {
+		
+		var control = false
+		
+		comida.forEach{c =>
+			if (c.nombre() == comidaNombre){
+				control = true	
+			}
+		}
+		return control
+	}
+	
+	method indexComida(comidaNombre){
+		 var index = 0
+		 
+		 new Range(start = 0, end = comida.size()-1).forEach{i =>
+		 	if (comida.get(i).nombre() == comidaNombre){
+		 		index = i
+		 	}
+		 }
+		 return index
+	}
+	
 	method entregado() {
 		estado = 1
 	}
