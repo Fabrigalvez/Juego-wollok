@@ -4,8 +4,7 @@ import Scenes.*
 
 program cocina {
 
-	mostrador.iniciar()
+	inicio.iniciar()
 	game.start()
 }
 
- 

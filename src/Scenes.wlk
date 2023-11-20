@@ -12,16 +12,18 @@ class Scene {
 		
 }
 
-object inicio inherits Scene(width = 20, height = 20, ground ="" ){
+object inicio inherits Scene(width = 15, height = 10, ground ="/assets/entrada-cafeteria.png" ){
 	
 	method iniciar(){
 		
 		game.clear()
+		game.cellSize(80)
 		game.title("Juego-Mostrador")
 		game.width(self.width())
 		game.height(self.height())
-		game.ground(self.ground())
-		//agregar visuales de la ventana principal
+		game.boardGround(fondoMostrador.image())
+		game.addVisual(fondoInicio)
+		game.addVisual(new Text())
 		
 		keyboard.m().onPressDo{mostrador.iniciar()}
 	}
@@ -41,8 +43,10 @@ object mostrador inherits Scene(width = 1200, height = 800, ground = "./assets/f
 		game.cellSize(1)
 		game.width(self.width())
 		game.height(self.height())
+
 		game.boardGround(self.ground())
 		self.generarClientes()
+		self.generarPuntuacion()
 		//hacer que cada cliente diga su pedido
 		//game.schedule(5000, {=>game.say(clientes.get(0), clientes.get(0).pedido().comida().toString())})
 		
@@ -61,7 +65,16 @@ object mostrador inherits Scene(width = 1200, height = 800, ground = "./assets/f
 	method clientesPiden(){
 		clientes.forEach{cliente =>
 			game.schedule(2000,{=>cliente.ordenarPedido()})
-			cocinero.recibirPedido(cliente.pedido())
+			cocinero.recibirPedido([cliente.pedido()])
+		}
+	}
+	
+	method generarPuntuacion(){
+		
+		new Range(start = 0, end = puntuacion).forEach{punto =>
+			const galletitaPunto = new GalletitaPunto(position = game.at(punto*50,78))
+			game.addVisual(galletitaPunto)
+			console.println(punto)
 		}
 	}
 	
@@ -118,7 +131,7 @@ object cocina inherits Scene(width = 15, height = 10, ground=""){
 		
 		
 		//keyboard.e().onPressDo{mostrador.cocinero().pedidoTerminado()}
-		keyboard.i().onPressDo{mostrador.cocinero().agregarComida(selector.seleccionado().get(0))}
+		keyboard.i().onPressDo{mostrador.cocinero().agregarComida(selector.seleccionado().copy().get(0))}
 		keyboard.m().onPressDo{mostrador.iniciar()}
 	
 	}
@@ -128,6 +141,7 @@ object cocina inherits Scene(width = 15, height = 10, ground=""){
 		//recordar mejorar el selector para que agregue la comida al pedido 
 		
 	}
+	
 	
 	method plantillaComida(){
 		game.addVisual(new Muffin())
@@ -166,5 +180,38 @@ object fondoCocina{
 	var property nombre = 'cocinaFondo'
 }
 
+object fondoInicio{
+	var property image = './assets/inicio.jpg'
+	const property position = game.at(0,0)
+	var property nombre = 'inicioFondo'
+}
+
+object fondoMostrador{
+	const property image = './assets/fondo10.jpg'
+	const property position = game.at(0,0)
+	var property nombre = 'mostradorFondo'
+	
+	
+}
+
+class Text{
+	var property text = 'INICIO'
+	var property position = game.center()
+	var property nombre = 'text'
+	var property textColor = paleta.negro()	
+}
+
+object fondoPerder{
+	const property image = './assets/'
+	const property position = game.at(0,0)
+	var property nombre = 'perderFondo'	
+}
+
+object paleta {
+	const property verde = "00FF00FF"
+	const property rojo = "FF0000FF"
+	const property negro = '#000000e0'
+	const property blanco = '#00000000'
+}
 
 
