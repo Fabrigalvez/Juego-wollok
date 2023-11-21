@@ -136,19 +136,6 @@ object cocina inherits Scene(width = 15, height = 10, ground=""){
 		return mostrador.cocinero().pedidos().size() == mostrador.cocinero().pedidosTerminados().size()
 	}
 	
-	method validarContenido (pedido1,pedido2){
-		var control = 0
-		
-		pedido1.forEach{comida1 =>
-			pedido2.forEach{comida2 =>
-				if(comida1.nombre() != comida2.nombre()){
-					control += 1
-				} 
-			}
-			
-		}
-		return control > 0
-	}
 	
 }
 

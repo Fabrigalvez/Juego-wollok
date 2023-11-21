@@ -154,8 +154,6 @@ class Cocinero {
 		var control = true
 		pedido1.forEach{comida1 =>
 			pedido2.forEach{comida2 =>
-				console.println(comida1)
-				console.println(comida2)
 				if(self.listaComidasIguales(comida1.comida(),comida2.comida())){
 					control = false
 				} 
