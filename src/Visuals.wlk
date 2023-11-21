@@ -10,7 +10,7 @@ class Cliente {
 	var property position = game.at(2,54)
 	var property numCliente = 0.randomUpTo(1000).truncate(0)
 	var property pedido = new Pedido(numeroPedido = numCliente)
-	
+
 	method mostrarCliente(num){
 		
 		position = game.at(position.x() + num,position.y()) 
@@ -18,24 +18,20 @@ class Cliente {
 		
 	}
 	method ordenarPedido (){
-		//hacer esto
-		//hacer un game.say para que se muestre el pedido por pantalla
 		pedido.generarComidaRandom(1.randomUpTo(10).truncate(0))
 		pedido.generarText()
-		//game.say(self, pedido.text())
 		game.addVisual(new Text(text = pedido.text(), position = position.up(170), textColor = paleta.verde() ))
 	}
 	
 	method recibirPedidoTerminado(){
-		//recibe el pedido terminado, cambia el estado del pedido
 		pedido.entregado()
 	}
 }
 
 class Cocinero {
 	
-	var property image = "./assets/cocinero.jpg"
-	var property position = game.at(3,5)
+	var property image = "./assets/cocinero1.png"
+	var property position = game.at(11,4)
 	var property nombre = 'cocinero'
 	var property pedidos = []
 	var property pedidoProceso = []
@@ -46,21 +42,7 @@ class Cocinero {
 	method recibirPedido(pedido){
 		pedidos.add(pedido)
 	}
-	
-	// cocinero tiene la mecanica principal del juego
-//	method agregarComida(comida){
-		//Generar una comunicacion entre el selector y el cocinero. El cocinero tiene que poder seleccionar las comidas necesarias para completar con un pedido
 		
-	//	if (self.existe(comida)){
-		//	pedidoProceso.get(self.indiceComida(comida)).sumarCantidad()
-		//}else{
-		//	pedidoProceso.add(comida)
-		//}
-		
-		
-		//selector.seleccionado().clear()
-	//}
-	
 	method agregarComida(comida){
 		pedidoProceso.get(0).agregarComida(comida)
 		pedidoProceso.get(0).generarText2()
@@ -95,7 +77,6 @@ class Cocinero {
 		siguientePedido = false
 		game.addVisual(selector)
 		if(indicePedido == 0)selector.configs()
-		//pedidoProceso.add(pedidos.get(indicePedido))
 	}}
 	
 	
@@ -109,7 +90,7 @@ class Cocinero {
 	
 	
 	method configs(){
-		//Cuando termine un pedido hay que mostrar un msj por pnatalla
+
 		keyboard.e().onPressDo{
 			self.hacerPedido()
 		}
@@ -119,7 +100,7 @@ class Cocinero {
 		keyboard.p().onPressDo{game.say(self, pedidoProceso.get(0).text())}
 	}
 	
-	//el clear de wollok anda mal
+
 	method pedidoTerminado(){
 		
 		if (not(siguientePedido)){
@@ -130,19 +111,15 @@ class Cocinero {
 			siguientePedido = true
 			game.removeVisual(selector)
 			self.entregarPedidosClientes()
-			// aca usar entregarPedidosClientes
 		}
 	}
 	
 	method entregarPedidosClientes(){
-		//generar una comunicacion entre cocinero y el juego para que mande todos los pedidos cuando esten terminados
-		//aca usar pedidosTerminados
-		//cuando los pedidos esten terminados qeu se entreguen y pasar al siguiente nivel
+
 		if (cocina.pedidosTerminados()){
 			
 			self.sistemaPuntaje()
 			mostrador.clientes().forEach{cliente =>
-				//creo que aca tengo que poner lo de validar para los puntos
 				game.schedule(3000,{=>cliente.recibirPedidoTerminado()})
 				
 			}
@@ -168,7 +145,7 @@ class Cocinero {
 		if (self.validarPedidos()){
 			mostrador.subirPuntaje()
 		}else{
-			game.stop()
+			perder.iniciar()
 		}
 	}
 	
@@ -191,6 +168,11 @@ class Cocinero {
 	method listaComidasIguales(lista1, lista2){
 		
 		var control = true
+		
+		if (lista1.size() == 0 or lista2.size() == 0){
+			control = false	
+		}
+		
 		lista1.forEach{comida1=>
 			
 			if(not lista2.any{comida2 => comida2.nombre() == comida1.nombre() and comida2.cantidad() == comida1.cantidad()}){
@@ -208,103 +190,12 @@ class Cocinero {
 	}
 }
 
-
-
-//creo que lo voy a sacar y pongo una bind y listo
-class Boton {
-	var property activo = false
-	const property image = null
-	var property position = null
-	
-	
-	
-}
-
-class Juego {
-	
-	//const cocinero = new Cocinero ()
-	//var property clientes = []
-	//var property dificultad = 1
-	var property estado = 0
-	var property pedidosTerminados = []
-	var property puntuacion = 0
-	const puntuacionGanadora = 100
-	
-	
-	method generarClientes() {
-		
-		new Range (start = 1, end = dificultad).forEach{
-			clientes.push(new Cliente ())				
-		}
-	}
-	//diria que el main se ejecute 5 veces, una vez por nivel. Recordar manejar todo con ticks para que no se ejecute todo de una, tipo cuando aparecen los clientes, hacen los pedidos,etc
-	method main(){
-		
-		self.generarClientes()
-		self.clientesPiden()
-		//cambioEscena
-		cocina.iniciar()
-		cocinero.hacerPedidos()
-		//vuelvo a la escena principal
-		// en duda de que cocinero.entregarPedidos() se llame aca o en la clase cocinero directamente
-		cocinero.entregarPedidosJuego()
-		self.validarPedidos()
-		self.entregarPedidosTerminados()
-		//self.subirDificultad()
-		
-	}
-	
-	
-
-	method clientesPiden(){
-		
-		clientes.forEach{cliente => 
-			cocinero.recibirPedido(cliente.pedido())
-		}
-	}
-	
-	method recibirPedidoTerminado(pedidoTerminado){
-		pedidosTerminados.add(pedidoTerminado)
-	}
-	
-	method validarPedidos(){
-		//aca validaria que onda los pedidos que hizo el cocinero  y les daria una puntuacion para cuando termine el juego ver si gana o pierde basandome en esa puntuacion, o algo del estilo
-	}
-	
-	method entregarPedidosTerminados(){
-		// Les daria a los clientes el pedido y los eliminaria con ticks de por medio para que no sea tan irreal
-	}
-	
-	method clienteRecibe(){
-		//creo que voy a borrar esto		
-	}
-	
-	
-	method subirDificultad() {
-		
-	var control = true
-		
-		clientes.forEach{cliente =>
-			if(cliente.pedido().estado() == 1){
-				control = false
-				//creo que aca borro el pedido si se entregan todos al mismo tiempo practicamente
-			}
-			
-		}
-		if (control) dificultad++
-	}
-	
-	
-	
-}
-
 class Pedido {
 	
 	
-	var property numeroPedido = 0 //random
+	var property numeroPedido = 0 
 	var property comida = []
 	var property comidaDisponible = ['muffin','torta','galletita']
-	//estado = 0 = en proceso            1 = entregado
 	var property estado = 0
 	var property text = ""
 	

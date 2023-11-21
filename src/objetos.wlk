@@ -6,7 +6,7 @@ class Electrodomestico {
 	var property position
 }
 
-object cafetera inherits Electrodomestico(image = "./assets/cafetera.png", position = game.at(6,4)) {
+object cafetera inherits Electrodomestico(image = "./assets/cafetera1.png", position = game.at(12,3)) {
 	var property nombre = 'cafetera'
 	method hacerCafe(taza){
 		
@@ -28,7 +28,7 @@ object cafetera inherits Electrodomestico(image = "./assets/cafetera.png", posit
 	}
 }
 
-object heladera inherits Electrodomestico(image = "./assets/heladera.jpg", position = game.at(0.8,5.8)) {
+object heladera inherits Electrodomestico(image = "./assets/heladera.jpg", position = game.at(0.8,4.8)) {
 	var property nombre = 'heladera'
 }
 class Comida{
@@ -45,7 +45,7 @@ class Comida{
 	}
 }
 
-class Galletita inherits Comida(image = "./assets/galletita.png", position = game.at(5,5)){//falta la posicion
+class Galletita inherits Comida(image = "./assets/galletita1.png", position = game.at(8,3)){//falta la posicion
 	var property nombre = 'galletita'
 
 	override method agregarChispas(){
@@ -54,11 +54,11 @@ class Galletita inherits Comida(image = "./assets/galletita.png", position = gam
 	}
 }
 
-class GalletitaPunto inherits Comida(image = "./assets/galletitaPunto.png", position = game.at(5,5)){
+class GalletitaPunto inherits Comida(image = "./assets/galletitaPunto.png", position = game.at(5,3)){
 	var property nombre = 'galletitaPunto'
 }
 
-class Torta inherits Comida(image= "./assets/torta.png", position = game.at(4,4)){//falta la posicion 	
+class Torta inherits Comida(image= "./assets/torta1.png", position = game.at(6,2)){//falta la posicion 	
 	var property nombre = 'torta'
 	override method agregarChispas(){
 		tieneChispas = true
@@ -66,14 +66,14 @@ class Torta inherits Comida(image= "./assets/torta.png", position = game.at(4,4)
 	}
 }
 
-class Muffin inherits Comida(image= "./assets/muffin.jpg", position = game.at(3,3)){//falta la posicion y la imagen
+class Muffin inherits Comida(image= "./assets/muffin.png", position = game.at(7,3)){//falta la posicion y la imagen
 	var property nombre = 'muffin'	
 }
 
 
 object juguera{
-	var property image = "./assets/juguera.jpg"
-	var property position = game.at(10,4)
+	var property image = "./assets/jarraGrande.png"
+	var property position = game.at(10,1)
 	var property nombre = 'juguera'
 	
 	method servirJugoNaranja(vaso){
@@ -86,65 +86,3 @@ object juguera{
 		vaso.conJugoDurazno()
 	}
 }
-
-class Vaso {
-	var property image = "./assets/vaso.png"
-	var property position = game.at(2,2)
-	var property nombre = 'vaso'
-	var property jugo = 0
-	
-	method noTieneJugo(){
-		return (jugo == 0)
-	}
-	method conJugoNaranja(){
-		if (self.noTieneJugo()){
-			jugo = 1
-			image = "./assets/vasoJugoNaranja.png"
-		}
-	
-	}
-		method conJugoFrutilla(){
-		if (self.noTieneJugo()){
-			jugo = 2
-			image = "./assets/vasoJugoFrutilla.png"
-		}
-	}
-		method conJugoDuranzo(){
-		if (self.noTieneJugo()){
-			jugo = 3
-			image = "./assets/vasoJugoDurazno.png"
-			}
-		}
-	}
-
-
-
-
-class Taza {
-	var property nombre = 'taza'
-	var property tieneCafe = false
-	var property tieneLeche = false
-	var property image = "./assets/taza.jpg"
-	var property position = game.at(0,0) //no se donde tiene que estar
-	method cafe(){
-		tieneCafe = true
-		image = "./assets/cafe.png"
-	}
-	method cafeConLeche(){
-		tieneCafe = true
-		tieneLeche = true
-		image = "./assets/cafeConLeche.png"
-	}
-}
-
-class Bandeja{
-	var property nombre = 'bandeja'
-	var property image = "./assets/bandeja.png" //no tenemos el asset
-	var property position = game.at(0,0) //no se donde tiene que estar
-	var cositas = []
-	
-	method agregarCosita(cosita){
-		cositas.add(cosita)
-	}
-}
-

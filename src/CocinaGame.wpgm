@@ -3,8 +3,15 @@ import Scenes.*
 
 
 program cocina {
-
+	
 	inicio.iniciar()
 	game.start()
 }
 
+
+
+
+
+
+	
+	

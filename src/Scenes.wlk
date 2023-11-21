@@ -2,7 +2,6 @@ import wollok.game.*
 import Visuals.*
 import objetos.*
 import selector.*
-//falta sistema de puntuacion, que el juego termine en algun punto y estetica a full, corregir posibles errores
 
 class Scene {
 	
@@ -29,7 +28,6 @@ object inicio inherits Scene(width = 15, height = 10, ground ="/assets/entrada-c
 	}
 }
 
-//sacar
 object mostrador inherits Scene(width = 1200, height = 800, ground = "./assets/fondo10.jpg"){
 	
 	var property cocinero = new Cocinero()
@@ -47,8 +45,6 @@ object mostrador inherits Scene(width = 1200, height = 800, ground = "./assets/f
 		game.boardGround(self.ground())
 		self.generarClientes()
 		self.generarPuntuacion()
-		//hacer que cada cliente diga su pedido
-		//game.schedule(5000, {=>game.say(clientes.get(0), clientes.get(0).pedido().comida().toString())})
 		
 		keyboard.c().onPressDo{cocina.iniciar()}
 	}
@@ -94,24 +90,17 @@ object mostrador inherits Scene(width = 1200, height = 800, ground = "./assets/f
 	method subirPuntaje (){
 		puntuacion+=1
 	}
+	
+	method reiniciarTodo(){
+		cocinero.reiniciar()
+		clientes.clear()
+		dificultad = 0
+		puntuacion = 0
+	}
 }
 
 object cocina inherits Scene(width = 15, height = 10, ground=""){
-	
-	//recordar que puede que no se borren las configs de los objetos, hay que verificarlo igual
-	//hacer todo manual tipo con binds
-	//ir poco a poco, solo enfocarnos en que funcionen las pantallas de cocina y mostrador
-	//si a las 4pm aprox no tengo un avance fuerte llamar a mora y romeo
-	
-	//falta :
-		//selector :
 
-
-		//sistema de puntuacion, victoria/derrota
-		//vista del juego
-		//funciones simples de cocina
-		//probarlo y rezar
-		
 		const cosas = [cafetera, juguera, heladera]
 		const comidas = ['muffin', 'torta', 'galletita']
 	method iniciar(){
@@ -122,26 +111,16 @@ object cocina inherits Scene(width = 15, height = 10, ground=""){
 		game.height(self.height())
 		game.addVisual(fondoCocina)
 		cosas.forEach{cosa => game.addVisual(cosa)}
-		//comidas.forEach{comida => game.addVisual(comida)}
 		self.plantillaComida()
 		game.addVisual(mostrador.cocinero())
-		//game.addVisual(selector)
 		mostrador.cocinero().configs()
-		//selector.configs()
+
 		
 		
-		//keyboard.e().onPressDo{mostrador.cocinero().pedidoTerminado()}
 		keyboard.i().onPressDo{mostrador.cocinero().agregarComida(selector.seleccionado().copy().get(0))}
 		keyboard.m().onPressDo{mostrador.iniciar()}
 	
 	}
-	
-	method comidaGenerador(){
-		//hacer un metodo que me genere una plantilla de comida pero que cada vez que use el selector esa comida no se borre si no que se cree una nueva y se guarde
-		//recordar mejorar el selector para que agregue la comida al pedido 
-		
-	}
-	
 	
 	method plantillaComida(){
 		game.addVisual(new Muffin())
@@ -173,9 +152,31 @@ object cocina inherits Scene(width = 15, height = 10, ground=""){
 	
 }
 
-//flatMap, any, contains
+object perder inherits Scene(width = 15, height = 10, ground=""){
+		
+	method iniciar(){
+
+		game.clear()
+		game.cellSize(80)
+		game.width(self.width())
+		game.height(self.height())
+		game.addVisual(fondoPerder)
+		
+		
+		keyboard.e().onPressDo{
+			game.stop()
+		}
+		
+		keyboard.r().onPressDo{
+			mostrador.reiniciarTodo()
+			inicio.iniciar()
+		}
+	}
+	
+}
+
 object fondoCocina{
-	const property image = './assets/cocina4.jpg'
+	const property image = './assets/cafeteria3.png'
 	const property position = game.at(0,0)
 	var property nombre = 'cocinaFondo'
 }
@@ -202,8 +203,8 @@ class Text{
 }
 
 object fondoPerder{
-	const property image = './assets/'
-	const property position = game.at(0,0)
+	const property image = './assets/perder.jpg'
+	const property position = game.at(-2,0)
 	var property nombre = 'perderFondo'	
 }
 
