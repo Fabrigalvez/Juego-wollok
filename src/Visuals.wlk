@@ -27,6 +27,12 @@ class Cliente {
 		
 		if (mostrador.cocinero().listaComidasIguales(pedido.comida(),pedido1.get(0).comida())){
 			pedido.entregado()
+			game.say(self,'Entregado')
+			if (mostrador.pedidosEntregados()){
+				mostrador.iniciar()
+			}
+		}else{
+			perder.iniciar()
 		}	
 	}
 }
@@ -204,12 +210,17 @@ class Boton{
 	
 }
 
+class Boton1{
+	var property nombre = ''
+	var property position = 0
+}
+
 class Pedido {
 	
 	
 	var property numeroPedido = 0 
 	var property comida = []
-	var property comidaDisponible = ['muffin','torta','galletita','cafe','jugo']
+	var property comidaDisponible =  ['muffin','torta','galletita','cafe','jugo']
 	var property estado = 0
 	var property text = ""
 	
@@ -248,23 +259,6 @@ class Pedido {
 				
 			} 
 			
-   if (comidaDisponible.get(0.randomUpTo(comidaDisponible.size()).truncate(0)) == 'cafe'){
-				
-				if (self.verificarComida('cafe')){
-					comida.get(self.indexComida('cafe')).sumarCantidad()
-				}else{
-					comida.add(new Cafe())	
-				}
-}
-
-if (comidaDisponible.get(0.randomUpTo(comidaDisponible.size()).truncate(0)) == 'jugo'){
-				
-				if (self.verificarComida('jugo')){
-					comida.get(self.indexComida('jugo')).sumarCantidad()
-				}else{
-					comida.add(new Jugo())	
-				}
-}
 			if (comidaDisponible.get(0.randomUpTo(comidaDisponible.size()).truncate(0)) == 'torta'){
 				if (self.verificarComida('torta')){
 					comida.get(self.indexComida('torta')).sumarCantidad()
@@ -280,6 +274,23 @@ if (comidaDisponible.get(0.randomUpTo(comidaDisponible.size()).truncate(0)) == '
 				comida.add(new Galletita())
 				}
 			}
+			if (comidaDisponible.get(0.randomUpTo(comidaDisponible.size()).truncate(0)) == 'cafe'){
+				
+				if (self.verificarComida('cafe')){
+					comida.get(self.indexComida('cafe')).sumarCantidad()
+				}else{
+					comida.add(new Cafe())	
+				}
+}
+
+			if (comidaDisponible.get(0.randomUpTo(comidaDisponible.size()).truncate(0)) == 'jugo'){
+				
+				if (self.verificarComida('jugo')){
+					comida.get(self.indexComida('jugo')).sumarCantidad()
+				}else{
+					comida.add(new Jugo())	
+				}
+}
 		}
 	}
 	method verificarComida(comidaNombre) {
