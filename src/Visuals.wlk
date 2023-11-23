@@ -40,7 +40,7 @@ class Cliente {
 class Cocinero{
 	
 	var property image = "./assets/cocinero1.png"
-	var property position = game.at(11,4)
+	var property position = game.at(1,4)
 	var property nombre = 'cocinero'
 	var property pedidos = []
 	var property pedidoProceso = []
