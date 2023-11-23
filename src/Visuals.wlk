@@ -209,7 +209,7 @@ class Pedido {
 	
 	var property numeroPedido = 0 
 	var property comida = []
-	var property comidaDisponible = ['muffin','torta','galletita']
+	var property comidaDisponible = ['muffin','torta','galletita','cafe','jugo']
 	var property estado = 0
 	var property text = ""
 	
@@ -248,6 +248,23 @@ class Pedido {
 				
 			} 
 			
+   if (comidaDisponible.get(0.randomUpTo(comidaDisponible.size()).truncate(0)) == 'cafe'){
+				
+				if (self.verificarComida('cafe')){
+					comida.get(self.indexComida('cafe')).sumarCantidad()
+				}else{
+					comida.add(new Cafe())	
+				}
+}
+
+if (comidaDisponible.get(0.randomUpTo(comidaDisponible.size()).truncate(0)) == 'jugo'){
+				
+				if (self.verificarComida('jugo')){
+					comida.get(self.indexComida('jugo')).sumarCantidad()
+				}else{
+					comida.add(new Jugo())	
+				}
+}
 			if (comidaDisponible.get(0.randomUpTo(comidaDisponible.size()).truncate(0)) == 'torta'){
 				if (self.verificarComida('torta')){
 					comida.get(self.indexComida('torta')).sumarCantidad()
