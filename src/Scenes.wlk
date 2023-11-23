@@ -13,6 +13,7 @@ class Scene {
 
 object inicio inherits Scene(width = 15, height = 10, ground ="/assets/entrada-cafeteria.png" ){
 	
+		
 	method iniciar(){
 		
 		game.clear()
@@ -20,10 +21,25 @@ object inicio inherits Scene(width = 15, height = 10, ground ="/assets/entrada-c
 		game.title("Juego-Mostrador")
 		game.width(self.width())
 		game.height(self.height())
-		game.boardGround(fondoMostrador.image())
-		game.addVisual(fondoInicio)
+		game.boardGround("./assets/fondo10.jpg")
+		game.addVisual(new Fondo (
+	image = './assets/inicio1.jpg',
+	position = game.at(0,0),
+	nombre = 'inicioFondo'
+))
+		self.boton1()
+		game.addVisual(selector)
+		selector.position(game.at(5,5))
+		selector.configs()
 		
-		keyboard.m().onPressDo{mostrador.iniciar()}
+	}
+	
+	method boton1(){
+		new Range(start = 1,end = 3).forEach{num =>
+			game.addVisual(new Boton1(nombre = 'jugar', position = game.at(5+num,4)))
+			game.addVisual(new Boton1(nombre = 'jugar', position = game.at(5+num,5)))
+		}
+
 	}
 }
 
@@ -111,11 +127,12 @@ object mostrador inherits Scene(width = 1200, height = 800, ground = "./assets/f
 }
 
 object cocina inherits Scene(width = 15, height = 10, ground=""){
-
-	const cosas = [cafetera, juguera, heladera]
-	const comidas = ['muffin', 'torta', 'galletita']
+	//var property tiempo = 60
+	const comidas = ['muffin', 'torta', 'galletita','cafe','jugo']
 	var property encendido = new Boton(nombre = 'encendido', position = game.at(5,5), image = './assets/encendido.png')
 	var property apagado = new Boton(nombre = 'apagado', position = game.at(5,5) , image = './assets/apagado.png')
+	
+	//method text() = tiempo
 		
 	method iniciar(){
 
@@ -123,15 +140,18 @@ object cocina inherits Scene(width = 15, height = 10, ground=""){
 		game.cellSize(80)
 		game.width(self.width())
 		game.height(self.height())
-		game.addVisual(fondoCocina)
-		cosas.forEach{cosa => game.addVisual(cosa)}
+		game.addVisual(new Fondo(
+ image = './assets/cafeteria3.png',
+	 position = game.at(0,0),
+nombre = 'cocinaFondo'
+))
 		game.addVisual(mostrador.cocinero())
 		mostrador.cocinero().configs()
 		game.addVisual(selector)
 		selector.configs()
 		selector.position(game.center())
 		game.addVisual(apagado)
-		
+		//game.onTick(1000, "pasar tiempo", tiempo -= 1)
 		
 			
 		keyboard.m().onPressDo{mostrador.iniciar()}		
@@ -161,6 +181,8 @@ object cocina inherits Scene(width = 15, height = 10, ground=""){
 			game.addVisual(new Muffin())
 			game.addVisual(new Torta())
 			game.addVisual(new Galletita())
+			game.addVisual(new Cafe())
+			game.addVisual(new Jugo())			
 		}else{
 			game.allVisuals().forEach{visual=>	
 				if (comidas.contains(visual.nombre())) game.removeVisual(visual)
@@ -178,7 +200,7 @@ object cocina inherits Scene(width = 15, height = 10, ground=""){
 	}
 	
 	method esBoton(visual){
-		return ['encendido','apagado'].contains(visual.nombre())
+		return ['encendido','apagado','jugar'].contains(visual.nombre())
 	}
 }
 
@@ -205,26 +227,33 @@ object perder inherits Scene(width = 15, height = 10, ground=""){
 	
 }
 
-object fondoCocina{
-	const property image = './assets/cafeteria3.png'
-	const property position = game.at(0,0)
-	var property nombre = 'cocinaFondo'
+class Fondo{
+	var property image
+	var property position
+	var property nombre
 }
 
-object fondoInicio{
-	var property image = './assets/inicio.png'
-	const property position = game.at(0,0)
-	var property nombre = 'inicioFondo'
-}
+/* 
+new Fondo(
+ image = './assets/cafeteria3.png',
+	 position = game.at(0,0),
+nombre = 'cocinaFondo'
+)
 
-object fondoMostrador{
-	const property image = './assets/fondo10.jpg'
-	const property position = game.at(0,0)
-	var property nombre = 'mostradorFondo'
+new Fondo (
+	image = './assets/inicio1.jpg',
+	position = game.at(0,0),
+	nombre = 'inicioFondo'
+)
+
+new Fondo(
+	image = './assets/fondo10.jpg',
+	position = game.at(0,0),
+	nombre = 'mostradorFondo'
 	
 	
-}
-
+)
+*/
 class Text{
 	var property text = 'INICIO'
 	var property position = 0
@@ -233,7 +262,7 @@ class Text{
 }
 
 object fondoPerder{
-	const property image = './assets/perder.png'
+	const property image = './assets/perder1.jpg'
 	const property position = game.at(-2,0)
 	var property nombre = 'perderFondo'	
 }
