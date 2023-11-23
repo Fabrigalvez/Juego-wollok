@@ -58,7 +58,7 @@ class GalletitaPunto inherits Comida(image = "./assets/galletitaPunto.png", posi
 	var property nombre = 'galletitaPunto'
 }
 
-class Torta inherits Comida(image= "./assets/torta1.png", position = game.at(6,2)){//falta la posicion 	
+class Torta inherits Comida(image= "./assets/torta2.png", position = game.at(6,2)){//falta la posicion 	
 	var property nombre = 'torta'
 	override method agregarChispas(){
 		tieneChispas = true
@@ -66,7 +66,7 @@ class Torta inherits Comida(image= "./assets/torta1.png", position = game.at(6,2
 	}
 }
 
-class Muffin inherits Comida(image= "./assets/muffin.png", position = game.at(7,3)){//falta la posicion y la imagen
+class Muffin inherits Comida(image= "./assets/muffin2.png", position = game.at(7,3)){//falta la posicion y la imagen
 	var property nombre = 'muffin'	
 }
 

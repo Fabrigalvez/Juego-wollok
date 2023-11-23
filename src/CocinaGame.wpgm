@@ -6,12 +6,8 @@ program cocina {
 	
 	inicio.iniciar()
 	game.start()
+	
 }
 
 
 
-
-
-
-	
-	

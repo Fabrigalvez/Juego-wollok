@@ -22,7 +22,6 @@ object inicio inherits Scene(width = 15, height = 10, ground ="/assets/entrada-c
 		game.height(self.height())
 		game.boardGround(fondoMostrador.image())
 		game.addVisual(fondoInicio)
-		game.addVisual(new Text())
 		
 		keyboard.m().onPressDo{mostrador.iniciar()}
 	}
@@ -41,21 +40,23 @@ object mostrador inherits Scene(width = 1200, height = 800, ground = "./assets/f
 		game.cellSize(1)
 		game.width(self.width())
 		game.height(self.height())
-
 		game.boardGround(self.ground())
 		self.generarClientes()
 		self.generarPuntuacion()
+
 		
 		keyboard.c().onPressDo{cocina.iniciar()}
 	}
-	method generarClientes() {
-		if(self.pedidosEntregados()){
-			new Range (start = 1, end = dificultad).forEach{a =>
-				clientes.add(new Cliente ())
-				clientes.get(a-1).mostrarCliente(a*100)					
-			}
-			self.clientesPiden()
+	
+
+	method generarClientes(){
+		self.pasarNivel()
+		new Range (start = 0, end = clientes.size()-1).forEach{a =>
+			clientes.get(a).mostrarCliente(a*100)					
 		}
+		game.addVisual(selector)
+		selector.configs2()
+		selector.position(clientes.get(0).position()) 				
 	}
 	
 	method clientesPiden(){
@@ -70,21 +71,31 @@ object mostrador inherits Scene(width = 1200, height = 800, ground = "./assets/f
 		new Range(start = 0, end = puntuacion).forEach{punto =>
 			const galletitaPunto = new GalletitaPunto(position = game.at(punto*50,78))
 			game.addVisual(galletitaPunto)
-			console.println(punto)
 		}
 	}
 	
 	method pedidosEntregados(){
 		
+		var control = 0
 		clientes.forEach{cliente => 
-			if (cliente.pedido().estado() == 0){
-				return false
+			if (cliente.pedido().estado() == 1){
+				control+=1
 			}
+		}	
+		return control == clientes.size() or dificultad == 0
+	}
+	
+	method pasarNivel(){
+		
+		if(self.pedidosEntregados()){
+		 	dificultad +=1
+		 	clientes.clear()
+		 	cocinero.reiniciar()
+		 new Range (start = 1, end = dificultad ).forEach{a =>
+				clientes.add(new Cliente())					
+			}
+			self.clientesPiden()			
 		}
-		 dificultad +=1
-		 clientes.clear()
-		 cocinero.reiniciar()	
-		return true 
 	}
 	
 	method subirPuntaje (){
@@ -101,8 +112,11 @@ object mostrador inherits Scene(width = 1200, height = 800, ground = "./assets/f
 
 object cocina inherits Scene(width = 15, height = 10, ground=""){
 
-		const cosas = [cafetera, juguera, heladera]
-		const comidas = ['muffin', 'torta', 'galletita']
+	const cosas = [cafetera, juguera, heladera]
+	const comidas = ['muffin', 'torta', 'galletita']
+	var property encendido = new Boton(nombre = 'encendido', position = game.at(5,5), image = './assets/encendido.png')
+	var property apagado = new Boton(nombre = 'apagado', position = game.at(5,5) , image = './assets/apagado.png')
+		
 	method iniciar(){
 
 		game.clear()
@@ -111,21 +125,48 @@ object cocina inherits Scene(width = 15, height = 10, ground=""){
 		game.height(self.height())
 		game.addVisual(fondoCocina)
 		cosas.forEach{cosa => game.addVisual(cosa)}
-		self.plantillaComida()
 		game.addVisual(mostrador.cocinero())
 		mostrador.cocinero().configs()
-
+		game.addVisual(selector)
+		selector.configs()
+		selector.position(game.center())
+		game.addVisual(apagado)
 		
 		
-		keyboard.i().onPressDo{mostrador.cocinero().agregarComida(selector.seleccionado().copy().get(0))}
-		keyboard.m().onPressDo{mostrador.iniciar()}
-	
+			
+		keyboard.m().onPressDo{mostrador.iniciar()}		
 	}
 	
-	method plantillaComida(){
-		game.addVisual(new Muffin())
-		game.addVisual(new Torta())
-		game.addVisual(new Galletita())
+	method cambiarEncendidoApagado(visual){
+		
+		if (visual.nombre() == 'encendido'){
+			game.removeVisual(encendido)
+			game.addVisual(apagado)
+			self.plantillaComida(false)
+			mostrador.cocinero().pedidoTerminado()
+		}
+		
+		if (visual.nombre() == 'apagado'){
+			game.removeVisual(apagado)
+			game.addVisual(encendido)
+			mostrador.cocinero().hacerPedido()
+			self.plantillaComida(true)
+		}
+	}
+	
+	
+	method plantillaComida(bool){
+		
+		if (bool){
+			game.addVisual(new Muffin())
+			game.addVisual(new Torta())
+			game.addVisual(new Galletita())
+		}else{
+			game.allVisuals().forEach{visual=>	
+				if (comidas.contains(visual.nombre())) game.removeVisual(visual)
+			}	
+		}
+		
 	}
 	
 	method esComida(visual){
@@ -136,7 +177,9 @@ object cocina inherits Scene(width = 15, height = 10, ground=""){
 		return mostrador.cocinero().pedidos().size() == mostrador.cocinero().pedidosTerminados().size()
 	}
 	
-	
+	method esBoton(visual){
+		return ['encendido','apagado'].contains(visual.nombre())
+	}
 }
 
 object perder inherits Scene(width = 15, height = 10, ground=""){
@@ -169,7 +212,7 @@ object fondoCocina{
 }
 
 object fondoInicio{
-	var property image = './assets/inicio.jpg'
+	var property image = './assets/inicio.png'
 	const property position = game.at(0,0)
 	var property nombre = 'inicioFondo'
 }
@@ -184,13 +227,13 @@ object fondoMostrador{
 
 class Text{
 	var property text = 'INICIO'
-	var property position = game.center()
+	var property position = 0
 	var property nombre = 'text'
 	var property textColor = paleta.negro()	
 }
 
 object fondoPerder{
-	const property image = './assets/perder.jpg'
+	const property image = './assets/perder.png'
 	const property position = game.at(-2,0)
 	var property nombre = 'perderFondo'	
 }

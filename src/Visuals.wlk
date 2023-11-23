@@ -13,22 +13,25 @@ class Cliente {
 
 	method mostrarCliente(num){
 		
-		position = game.at(position.x() + num,position.y()) 
+		position = game.at(num,position.y()) 
 		game.addVisual(self)
 		
 	}
 	method ordenarPedido (){
 		pedido.generarComidaRandom(1.randomUpTo(10).truncate(0))
 		pedido.generarText()
-		game.addVisual(new Text(text = pedido.text(), position = position.up(170), textColor = paleta.verde() ))
+		game.addVisual(new Text(text = pedido.text(), position = game.at(position.right(90).x(),position.up(210).y()), textColor = paleta.verde() ))
 	}
 	
-	method recibirPedidoTerminado(){
-		pedido.entregado()
+	method recibirPedidoTerminado(pedido1){
+		
+		if (mostrador.cocinero().listaComidasIguales(pedido.comida(),pedido1.get(0).comida())){
+			pedido.entregado()
+		}	
 	}
 }
 
-class Cocinero {
+class Cocinero{
 	
 	var property image = "./assets/cocinero1.png"
 	var property position = game.at(11,4)
@@ -46,7 +49,6 @@ class Cocinero {
 	method agregarComida(comida){
 		pedidoProceso.get(0).agregarComida(comida)
 		pedidoProceso.get(0).generarText2()
-		selector.seleccionado().clear()
 	}
 	
 	method existe(comida){
@@ -75,9 +77,10 @@ class Cocinero {
 	if(siguientePedido){
 		pedidoProceso = [new Pedido()]
 		siguientePedido = false
-		game.addVisual(selector)
-		if(indicePedido == 0)selector.configs()
-	}}
+		
+		
+		}
+	}
 	
 	
 	method reiniciar(){
@@ -91,16 +94,21 @@ class Cocinero {
 	
 	method configs(){
 
-		keyboard.e().onPressDo{
-			self.hacerPedido()
-		}
-		keyboard.t().onPressDo{
-			self.pedidoTerminado()
-		}
 		keyboard.p().onPressDo{game.say(self, pedidoProceso.get(0).text())}
 	}
 	
-
+	method pedidoTerminado(){
+		
+		if (not(siguientePedido)){
+			pedidosTerminados.add(pedidoProceso.copy())
+			indicePedido+=1
+			siguientePedido = true
+			game.removeVisual(selector)
+			mostrador.iniciar()
+		}
+	}
+	
+/* 
 	method pedidoTerminado(){
 		
 		if (not(siguientePedido)){
@@ -120,13 +128,13 @@ class Cocinero {
 			
 			self.sistemaPuntaje()
 			mostrador.clientes().forEach{cliente =>
-				game.schedule(3000,{=>cliente.recibirPedidoTerminado()})
+				cliente.recibirPedidoTerminado()
 				
 			}
 			game.say(self, 'PEDIDOS ENTREGADOS, VOLVE AL MOSTRADOR')
 		}
 	}
-	
+*/
 	method validarPedidos(){
 		
 		var control = true
@@ -188,6 +196,14 @@ class Cocinero {
 	}
 }
 
+class Boton{
+	
+	var property nombre = ''
+	var property position = 0
+	var property image = ''
+	
+}
+
 class Pedido {
 	
 	
@@ -199,14 +215,14 @@ class Pedido {
 	
 	method generarText(){
 		comida.forEach{c =>
-			text = text + c.nombre() + " " + c.cantidad().toString() + ", "  
+			text = text + c.nombre() + " " + c.cantidad().toString() + "\n"  
 		}
 	}
 	
 	method generarText2(){
 		text = ""
 		comida.forEach{c =>
-			text = text + c.nombre() + " " + c.cantidad().toString() + ", " 
+			text = text + c.nombre() + " " + c.cantidad().toString() + "\n" 
 		}
 	}
 	
@@ -288,6 +304,7 @@ object movimiento {
 		keyboard.left().onPressDo{ self.mover(izquierda,visual)}
 		keyboard.right().onPressDo{ self.mover(derecha,visual)}
    }
+   
 	
 	method mover(direccion,personaje){
 		personaje.position(direccion.siguiente(personaje.position()))
