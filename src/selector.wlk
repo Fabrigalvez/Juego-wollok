@@ -6,7 +6,7 @@ import objetos.*
 object selector {
 	
 	var property position = game.at(3,3)
-	var property image = "./assets/cursor.JPG"
+	var property image = "./assets/cursor.png"
 //	var property seleccionado = [];
 	var property nombre = 'selector'
 	var property num = 1
@@ -30,6 +30,9 @@ object selector {
 			if (visual.nombre() == 'cliente'){
 				visual.recibirPedidoTerminado(mostrador.cocinero().pedidoProceso().copy())
 			}
+			if (cocina.esBoton(visual) and visual.nombre() == 'jugar'){
+				mostrador.iniciar()
+			}
 		}
 	}
 	
@@ -45,7 +48,7 @@ object selector {
 	
 	method configurarFlechas4(visual){
 		keyboard.left().onPressDo{ console.println('hola')
-			position.left(100)
+			position = game.at(position.x()-100, position.y())   
 		}
 		keyboard.right().onPressDo{
 			
